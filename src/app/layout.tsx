@@ -1,12 +1,12 @@
-import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
+import { Inter } from 'next/font/google'
+import UserInfo from '@/components/UserInfo'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'Busca Cliente.ia',
-  description: 'Encontre contatos de empresas e profissionais filtrados por nicho',
+  description: 'Encontre seus clientes ideais com IA',
 }
 
 export default function RootLayout({
@@ -15,22 +15,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="pt-BR">
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        {children}
+        <UserInfo />
       </body>
     </html>
   )

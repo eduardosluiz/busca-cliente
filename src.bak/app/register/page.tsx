@@ -62,13 +62,13 @@ export default function RegisterPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full mx-auto space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
             Criar sua conta
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-center text-sm text-gray-600">
             {plan ? 'Você selecionou o ' : 'Começar com o '}
             <span className="font-semibold">
               {plan === 'pro' 
@@ -81,8 +81,8 @@ export default function RegisterPage({
         </div>
         
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/50 p-4 rounded-md">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <div className="bg-red-50 p-4 rounded-md">
+            <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
 
@@ -98,7 +98,7 @@ export default function RegisterPage({
                 name="name"
                 type="text"
                 required
-                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-800 dark:text-white dark:ring-gray-700"
+                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600"
                 placeholder="Nome completo"
               />
             </div>
@@ -113,7 +113,7 @@ export default function RegisterPage({
                 required
                 value={cpf}
                 onChange={handleCPFChange}
-                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-800 dark:text-white dark:ring-gray-700"
+                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600"
                 placeholder="CPF (ex: 123.456.789-00)"
                 maxLength={14}
               />
@@ -128,7 +128,7 @@ export default function RegisterPage({
                 type="email"
                 autoComplete="email"
                 required
-                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-800 dark:text-white dark:ring-gray-700"
+                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600"
                 placeholder="Email"
               />
             </div>
@@ -142,7 +142,7 @@ export default function RegisterPage({
                 type="password"
                 autoComplete="new-password"
                 required
-                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-800 dark:text-white dark:ring-gray-700"
+                className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600"
                 placeholder="Senha"
                 minLength={6}
               />

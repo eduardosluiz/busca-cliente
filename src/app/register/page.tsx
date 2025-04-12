@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import EmailConfirmation from '@/components/EmailConfirmation'
 
 export default function RegisterPage({
   searchParams,
@@ -9,10 +11,12 @@ export default function RegisterPage({
   searchParams: { plan?: string }
 }) {
   const router = useRouter()
+  const supabase = createClientComponentClient()
   const plan = searchParams.plan
   const [cpf, setCpf] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
 
   const formatCPF = (value: string) => {
     // Remove tudo que não é número
@@ -35,37 +39,60 @@ export default function RegisterPage({
 
     try {
       const formData = new FormData(event.currentTarget)
-      const data = {
-        name: formData.get('name'),
-        cpf: formData.get('cpf'),
-        email: formData.get('email'),
-        password: formData.get('password'),
-        plan: formData.get('plan')
-      }
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
+      const name = formData.get('name') as string
+      const userCpf = formData.get('cpf') as string
 
-      // Aqui você implementará a chamada à API de registro
-      // Por enquanto, vamos simular um registro bem-sucedido
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simula chamada à API
-      
-      // Se o plano for pago, redireciona para checkout
-      if (plan === 'pro' || plan === 'enterprise') {
-        router.push('/checkout')
+      console.log('Iniciando registro do usuário:', { email, name, userCpf, plan })
+
+      // Criar usuário no Supabase
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            cpf: userCpf,
+            plan: plan || 'free'
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      console.log('Resposta do Supabase:', { authData, authError })
+
+      if (authError) throw authError
+
+      if (authData?.user) {
+        console.log('Usuário criado com sucesso:', authData.user)
+        setRegisteredEmail(email)
+        return // Garante que o código não continua após setar o email
       } else {
-        // Se for plano gratuito, redireciona para dashboard
-        router.push('/dashboard')
+        throw new Error('Não foi possível criar o usuário')
       }
-    } catch (err) {
-      setError('Ocorreu um erro ao criar sua conta. Tente novamente.')
+    } catch (err: any) {
+      console.error('Erro no registro:', err)
+      if (err.message === 'User already registered') {
+        setError('Este email já está registrado. Por favor, faça login.')
+      } else {
+        setError(err.message || 'Ocorreu um erro ao criar sua conta. Tente novamente.')
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  if (registeredEmail) {
+    console.log('Renderizando confirmação para:', registeredEmail)
+    return <EmailConfirmation email={registeredEmail} />
   }
 
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full mx-auto space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight font-poppins bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent uppercase">
             Criar sua conta
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
