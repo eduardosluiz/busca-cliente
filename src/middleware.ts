@@ -18,7 +18,10 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith('/assinatura') ||
     req.nextUrl.pathname.startsWith('/configuracoes')
   )) {
-    return NextResponse.redirect(new URL('/login', req.url))
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = '/login'
+    redirectUrl.searchParams.set('redirectedFrom', req.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
   }
 
   // Se estiver autenticado e tentar acessar login/registro
@@ -26,7 +29,9 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith('/login') ||
     req.nextUrl.pathname.startsWith('/register')
   )) {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = '/dashboard'
+    return NextResponse.redirect(redirectUrl)
   }
 
   return res

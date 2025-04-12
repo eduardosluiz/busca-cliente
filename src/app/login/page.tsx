@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function Login() {
   const router = useRouter()
@@ -12,6 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const supabase = createClientComponentClient()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,9 +27,14 @@ export default function Login() {
 
       if (error) throw error
 
-      router.push('/dashboard')
+      if (data?.user) {
+        router.refresh()
+        router.push('/dashboard')
+      } else {
+        throw new Error('Usuário não encontrado')
+      }
     } catch (error: any) {
-      setError(error.message)
+      setError(error.message || 'Erro ao fazer login. Verifique suas credenciais.')
     } finally {
       setLoading(false)
     }
@@ -38,6 +44,9 @@ export default function Login() {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
       })
 
       if (error) throw error
@@ -47,8 +56,8 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col justify-center">
-      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 z-50 border-b border-gray-200 dark:border-gray-800">
+    <div className="min-h-screen bg-white flex flex-col justify-center">
+      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50 border-b border-gray-200">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
@@ -64,11 +73,11 @@ export default function Login() {
             Bem-vindo de volta
           </span>
         </h2>
-        <p className="mt-2 text-center text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-center text-gray-600">
           Não tem uma conta?{' '}
           <Link
             href="/register"
-            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            className="font-medium text-blue-600 hover:text-blue-500"
           >
             Criar conta gratuita
           </Link>
@@ -76,16 +85,16 @@ export default function Login() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
-        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-gray-200">
           <form className="space-y-6" onSubmit={handleLogin}>
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm p-3 rounded">
+              <div className="bg-red-50 text-red-600 text-sm p-3 rounded">
                 {error}
               </div>
             )}
             
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
               <div className="mt-1">
@@ -97,13 +106,13 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 text-gray-900 dark:text-blue-400"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
               </label>
               <div className="mt-1">
@@ -115,7 +124,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 text-gray-900 dark:text-blue-400"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
                 />
               </div>
             </div>
@@ -128,7 +137,7 @@ export default function Login() {
                   type="checkbox"
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
                   Lembrar-me
                 </label>
               </div>
@@ -136,7 +145,7 @@ export default function Login() {
               <div className="text-sm">
                 <Link
                   href="/forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                  className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   Esqueceu sua senha?
                 </Link>
@@ -157,10 +166,10 @@ export default function Login() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
+                <span className="px-2 bg-white text-gray-500">
                   Ou continue com
                 </span>
               </div>
@@ -169,7 +178,7 @@ export default function Login() {
             <div className="mt-6">
               <button
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
