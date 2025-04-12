@@ -1,6 +1,6 @@
 export default function AssinaturaPage() {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Menu Lateral */}
       <aside className="w-64 bg-[#1E2A4A] text-white">
         <div className="p-4 border-b border-gray-700">
@@ -58,7 +58,7 @@ export default function AssinaturaPage() {
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900">
-              Gerenciar Assinatura
+              Assinatura
             </h1>
             <div className="flex items-center space-x-4">
               <button className="p-2 rounded-full hover:bg-gray-100">
@@ -72,181 +72,115 @@ export default function AssinaturaPage() {
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
-            <p className="text-gray-600 mb-8">
-              Visualize e altere seu plano atual de acordo com suas necessidades
-            </p>
-
-            {/* Plano Atual */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                <svg className="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                Sua assinatura atual
-              </h2>
-
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900">Plano Início</h3>
-                      <p className="text-sm text-gray-600">Assinatura ativa</p>
-                    </div>
-                    <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
-                      Fazer Upgrade
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Buscas utilizadas</span>
-                        <span>12 / 50</span>
-                      </div>
-                      <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 rounded-full" style={{ width: '24%' }}></div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Contatos exportados</span>
-                        <span>230 / 1000</span>
-                      </div>
-                      <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 rounded-full" style={{ width: '23%' }}></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <button className="w-full flex items-center justify-center space-x-2 text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-lg px-4 py-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <span>Adicionar 1.000 contatos (R$ 20,00)</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Alterar plano */}
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Alterar plano</h2>
+            {/* Conteúdo da página de assinatura */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Plano Free */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Free</h3>
-                <div className="text-2xl font-bold text-gray-900 mb-1">Grátis</div>
-                <p className="text-sm text-gray-600 mb-6">Ideal para testar a plataforma</p>
-                
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Plano Gratuito */}
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold mb-4">Plano Gratuito</h2>
+                <p className="text-gray-600 mb-6">Ideal para começar</p>
+                <p className="text-3xl font-bold mb-6">R$ 0<span className="text-lg font-normal text-gray-600">/mês</span></p>
+                <ul className="space-y-4 mb-6">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Até 10 buscas por mês
+                    <span>10 buscas por mês</span>
                   </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Até 50 contatos por mês
+                    <span>100 contatos por mês</span>
                   </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Filtros básicos
-                  </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Sem exportação de dados
+                    <span>Suporte por email</span>
                   </li>
                 </ul>
-
-                <button className="w-full px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  Fazer Downgrade
-                </button>
-              </div>
-
-              {/* Plano Início */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border-2 border-blue-600 relative">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-1 text-xs rounded-full">
-                  Recomendado
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Início</h3>
-                <div className="text-2xl font-bold text-gray-900 mb-1">R$ 49,90 <span className="text-sm font-normal text-gray-600">/mês</span></div>
-                <p className="text-sm text-gray-600 mb-6">Para pequenas empresas</p>
-                
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Até 50 buscas por mês
-                  </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Até 1.000 contatos por mês
-                  </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Todos os filtros disponíveis
-                  </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Exportação de dados
-                  </li>
-                </ul>
-
-                <button className="w-full px-4 py-2 text-sm bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed">
+                <button className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                   Plano Atual
                 </button>
               </div>
 
-              {/* Plano Premium */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Premium</h3>
-                <div className="text-2xl font-bold text-gray-900 mb-1">R$ 69,90 <span className="text-sm font-normal text-gray-600">/mês</span></div>
-                <p className="text-sm text-gray-600 mb-6">Para empresas em crescimento</p>
-                
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Plano Start */}
+              <div className="bg-white rounded-lg p-6 border border-blue-500 shadow-lg relative">
+                <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-sm rounded-bl-lg rounded-tr-lg">
+                  Popular
+                </div>
+                <h2 className="text-xl font-semibold mb-4">Plano Start</h2>
+                <p className="text-gray-600 mb-6">Para profissionais</p>
+                <p className="text-3xl font-bold mb-6">R$ 49<span className="text-lg font-normal text-gray-600">/mês</span></p>
+                <ul className="space-y-4 mb-6">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Até 100 buscas por mês
+                    <span>50 buscas por mês</span>
                   </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Até 3.000 contatos por mês
+                    <span>1.000 contatos por mês</span>
                   </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Filtros avançados
+                    <span>Suporte prioritário</span>
                   </li>
-                  <li className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Exportação ilimitada
+                    <span>Exportação em massa</span>
                   </li>
                 </ul>
+                <button className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  Fazer Upgrade
+                </button>
+              </div>
 
-                <button className="w-full px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+              {/* Plano Premium */}
+              <div className="bg-white rounded-lg p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold mb-4">Plano Premium</h2>
+                <p className="text-gray-600 mb-6">Para empresas</p>
+                <p className="text-3xl font-bold mb-6">R$ 99<span className="text-lg font-normal text-gray-600">/mês</span></p>
+                <ul className="space-y-4 mb-6">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Buscas ilimitadas</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>5.000 contatos por mês</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Suporte 24/7</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>API de integração</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Relatórios avançados</span>
+                  </li>
+                </ul>
+                <button className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                   Fazer Upgrade
                 </button>
               </div>

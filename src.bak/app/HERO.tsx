@@ -3,8 +3,8 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="fixed w-full bg-white/80 backdrop-blur-sm z-50 border-b border-gray-200">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <header className="fixed w-full bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 z-50 border-b border-gray-200 dark:border-gray-800">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
@@ -15,7 +15,7 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/login"
-                className="text-gray-600 hover:text-blue-600"
+                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 Login
               </Link>
@@ -33,7 +33,7 @@ export default function Home() {
       <main className="pt-24">
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-8">
+          <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 dark:text-white mb-8">
             Encontre seus{' '}
             <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
               clientes ideais
@@ -41,7 +41,7 @@ export default function Home() {
             <br />
             de forma inteligente
           </h1>
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">
             Busca Cliente.ia é a plataforma que ajuda você a encontrar contatos de empresas
             e profissionais filtrados por nicho, utilizando dados públicos das principais
             redes sociais.
@@ -88,14 +88,14 @@ export default function Home() {
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900">
+                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-300">
                     {feature.description}
                   </p>
                 </div>
@@ -104,55 +104,55 @@ export default function Home() {
           </div>
 
           {/* Testimonials Section */}
-          <div className="py-16 mb-16 border-t border-b border-gray-200">
+          <div className="py-16 mb-16 border-t border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-4xl font-bold mb-12 text-center">
-              <span className="text-gray-900">O que nossos </span>
+              <span className="text-gray-900 dark:text-white">O que nossos </span>
               <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
                 clientes dizem
               </span>
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-xl shadow-lg">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center mb-4">
                   <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl">
                     M
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900">Marcos Silva</h3>
-                    <p className="text-sm text-gray-600">CEO da TechSolutions</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Marcos Silva</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">CEO da TechSolutions</p>
                   </div>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   "Incrível como a ferramenta facilitou nossa prospecção. Conseguimos encontrar leads qualificados de forma muito mais eficiente. O ROI foi excepcional!"
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-xl shadow-lg">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center mb-4">
                   <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl">
                     A
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900">Ana Costa</h3>
-                    <p className="text-sm text-gray-600">Marketing Manager</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Ana Costa</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Marketing Manager</p>
                   </div>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   "Os filtros avançados são fantásticos! Conseguimos segmentar perfeitamente nosso público-alvo e aumentamos nossa taxa de conversão em 150%."
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-xl shadow-lg">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
                 <div className="flex items-center mb-4">
                   <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl">
                     R
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900">Rafael Santos</h3>
-                    <p className="text-sm text-gray-600">Diretor Comercial</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Rafael Santos</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Diretor Comercial</p>
                   </div>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   "A melhor ferramenta de prospecção que já usei. A qualidade dos contatos é impressionante e o suporte é excelente. Recomendo fortemente!"
                 </p>
               </div>
@@ -213,18 +213,18 @@ export default function Home() {
                 className={`rounded-2xl p-8 font-poppins ${
                   plan.popular
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-gray-900 shadow-xl scale-105'
-                    : 'bg-white shadow-lg'
+                    : 'bg-white dark:bg-gray-800 shadow-lg'
                 }`}
               >
-                <h3 className={`text-2xl font-bold mb-4 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-2xl font-bold mb-4 ${plan.popular ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                   {plan.title}
                 </h3>
-                <p className={`text-4xl font-bold mb-6 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                <p className={`text-4xl font-bold mb-6 ${plan.popular ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                   {plan.price}
                 </p>
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((feature) => (
-                    <li key={feature} className={`flex items-center ${plan.popular ? 'text-white' : 'text-gray-700'}`}>
+                    <li key={feature} className={`flex items-center ${plan.popular ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                       <svg
                         className="w-5 h-5 mr-2 flex-shrink-0"
                         fill="none"
@@ -257,13 +257,13 @@ export default function Home() {
           </div>
 
           {/* Extra Contacts Section */}
-          <div className="text-center py-12 border-t border-gray-200">
-            <h3 className="text-2xl font-bold mb-4 text-gray-900">
+          <div className="text-center py-12 border-t border-gray-200 dark:border-gray-700">
+            <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
               Precisa de mais contatos?
             </h3>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 dark:text-gray-300">
               Adicione 1.000 contatos extras por apenas{' '}
-              <span className="font-semibold text-blue-600">
+              <span className="font-semibold text-blue-600 dark:text-blue-400">
                 R$ 20,00/mês
               </span>
             </p>
@@ -271,47 +271,47 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-gray-50 border-t border-gray-200">
+      <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-gray-900">Produto</h4>
+              <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Produto</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Como funciona</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Preços</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Cases</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Como funciona</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Preços</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Cases</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-gray-900">Recursos</h4>
+              <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Recursos</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Blog</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Guias</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Webinars</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Blog</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Guias</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Webinars</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-gray-900">Empresa</h4>
+              <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Empresa</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Sobre</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Contato</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Carreiras</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Sobre</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Contato</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Carreiras</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-gray-900">Legal</h4>
+              <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Legal</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Privacidade</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Termos</Link></li>
-                <li><Link href="#" className="text-gray-600 hover:text-blue-600">Cookies</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Privacidade</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Termos</Link></li>
+                <li><Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Cookies</Link></li>
               </ul>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-600">
+          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-600 dark:text-gray-400">
             <p>&copy; 2024 Busca Cliente.ia. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
     </div>
   )
-}
+} 
