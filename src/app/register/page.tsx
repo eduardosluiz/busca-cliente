@@ -66,8 +66,26 @@ export default function RegisterPage({
 
       if (authData?.user) {
         console.log('Usuário criado com sucesso:', authData.user)
+        
+        // Inserir dados na tabela profiles
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authData.user.id,
+            name,
+            email,
+            cpf: userCpf,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+
+        if (profileError) {
+          console.error('Erro ao criar perfil:', profileError)
+          throw new Error('Erro ao criar perfil do usuário')
+        }
+
         setRegisteredEmail(email)
-        return // Garante que o código não continua após setar o email
+        return
       } else {
         throw new Error('Não foi possível criar o usuário')
       }

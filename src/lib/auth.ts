@@ -1,56 +1,118 @@
-import { supabase } from './supabase'
-import { User } from '@supabase/supabase-js'
+import { createBrowserClient } from '@/lib/supabase'
+import { User, AuthChangeEvent, Session } from '@supabase/supabase-js'
 
 // Função para registrar um novo usuário
-export const signUp = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  })
-
-  if (error) throw error
-  return data
+export const signUp = async (email: string, password: string, name: string) => {
+  try {
+    const supabase = createBrowserClient()
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name }
+      }
+    })
+    if (error) throw error
+    return { data, error: null }
+  } catch (error) {
+    console.error('Erro ao registrar:', error)
+    return { data: null, error }
+  }
 }
 
 // Função para fazer login
-export const signIn = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) throw error
-  return data
+export const signIn = async (email: string, password: string): Promise<{ user: User | null; error: any }> => {
+  try {
+    const supabase = createBrowserClient()
+    const { data: { user }, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+    if (error) throw error
+    return { user, error: null }
+  } catch (error) {
+    console.error('Erro ao fazer login:', error)
+    return { user: null, error }
+  }
 }
 
 // Função para fazer logout
-export const signOut = async () => {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw error
+export const signOut = async (): Promise<{ error: any }> => {
+  try {
+    const supabase = createBrowserClient()
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+    return { error: null }
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error)
+    return { error }
+  }
 }
 
 // Função para recuperar senha
 export const resetPassword = async (email: string) => {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
-  })
-
-  if (error) throw error
+  try {
+    const supabase = createBrowserClient()
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email)
+    if (error) throw error
+    return { data, error: null }
+  } catch (error) {
+    console.error('Erro ao solicitar redefinição de senha:', error)
+    return { data: null, error }
+  }
 }
 
 // Função para atualizar senha
-export const updatePassword = async (newPassword: string) => {
-  const { error } = await supabase.auth.updateUser({
-    password: newPassword,
-  })
+export const updatePassword = async (password: string) => {
+  try {
+    // Validações de segurança
+    if (!password) {
+      throw new Error('A senha é obrigatória')
+    }
+    
+    if (password.length < 8) {
+      throw new Error('A senha deve ter no mínimo 8 caracteres')
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      throw new Error('A senha deve conter pelo menos uma letra maiúscula')
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      throw new Error('A senha deve conter pelo menos uma letra minúscula')
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      throw new Error('A senha deve conter pelo menos um número')
+    }
+    
+    if (!/[!@#$%^&*]/.test(password)) {
+      throw new Error('A senha deve conter pelo menos um caractere especial (!@#$%^&*)')
+    }
 
-  if (error) throw error
+    const supabase = createBrowserClient()
+    const { data, error } = await supabase.auth.updateUser({
+      password
+    })
+    if (error) throw error
+    return { data, error: null }
+  } catch (error) {
+    console.error('Erro ao atualizar senha:', error)
+    return { data: null, error }
+  }
 }
 
 // Função para obter usuário atual
 export const getCurrentUser = async (): Promise<User | null> => {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  try {
+    const supabase = createBrowserClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+    if (error) throw error
+    return user
+  } catch (error) {
+    console.error('Erro ao obter usuário atual:', error)
+    return null
+  }
 }
 
 // Função para verificar se o usuário está autenticado
@@ -61,7 +123,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
 
 // Função para atualizar dados do usuário
 export const updateUserProfile = async (data: { 
-  full_name?: string
+  name?: string
   company?: string
   phone?: string
 }) => {
@@ -74,9 +136,11 @@ export const updateUserProfile = async (data: {
 
 // Configurar listener para mudanças na autenticação
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
-  return supabase.auth.onAuthStateChange((event, session) => {
+  const supabase = createBrowserClient()
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
     callback(session?.user || null)
   })
+  return subscription
 }
 
 // Middleware para verificar autenticação

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -14,26 +14,56 @@ export default function Login() {
   const [error, setError] = useState('')
   const supabase = createClientComponentClient()
 
+  useEffect(() => {
+    const checkAndClearSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (session) {
+          // Se houver uma sessão ativa, fazer logout
+          await supabase.auth.signOut()
+          router.refresh()
+        }
+      } catch (error) {
+        console.error('Erro ao verificar sessão:', error)
+      }
+    }
+
+    checkAndClearSession()
+  }, [])
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
     try {
+      console.log('Tentando login com:', { email }) // Não logar a senha!
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        console.error('Erro de autenticação:', error)
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Email ou senha incorretos')
+        } else if (error.message.includes('Email not confirmed')) {
+          throw new Error('Por favor, confirme seu email antes de fazer login')
+        } else {
+          throw error
+        }
+      }
 
       if (data?.user) {
+        console.log('Login bem sucedido:', data.user.email)
         router.refresh()
         router.push('/dashboard')
       } else {
         throw new Error('Usuário não encontrado')
       }
     } catch (error: any) {
+      console.error('Erro completo:', error)
       setError(error.message || 'Erro ao fazer login. Verifique suas credenciais.')
     } finally {
       setLoading(false)

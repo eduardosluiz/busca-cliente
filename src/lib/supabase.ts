@@ -1,24 +1,146 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/types/supabase'
 import { Contact, ContactFilters, validateContact, hasErrors } from '@/types/contact'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Verificação das variáveis de ambiente
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Faltam variáveis de ambiente do Supabase')
+}
+
+console.log('Supabase URL:', supabaseUrl)
 
 // Cliente para uso em componentes
 export const createBrowserClient = () => {
-  return createClientComponentClient()
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Faltam variáveis de ambiente do Supabase')
+  }
+
+  return createClientComponentClient<Database>({
+    supabaseUrl,
+    supabaseKey: supabaseAnonKey,
+  })
 }
 
-// Cliente para uso em funções de API
-export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey)
+// Função para verificar autenticação
+export const checkAuth = async () => {
+  try {
+    const supabase = createBrowserClient()
+    const { data: { session }, error } = await supabase.auth.getSession()
+    if (error) throw error
+    return { user: session?.user || null, error: null }
+  } catch (error) {
+    console.error('Erro ao verificar autenticação:', error)
+    return { user: null, error }
+  }
+}
+
+// Função para fazer login
+export const signIn = async (email: string, password: string) => {
+  try {
+    const supabase = createBrowserClient()
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (error) throw error
+    return { data, error: null }
+  } catch (error) {
+    console.error('Erro ao fazer login:', error)
+    return { data: null, error }
+  }
+}
+
+// Função para fazer logout
+export const signOut = async () => {
+  try {
+    const supabase = createBrowserClient()
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+    return { error: null }
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error)
+    return { error }
+  }
+}
 
 export type { Contact } from '@/types/contact'
 
 // Função para criar a tabela de contatos
-export const createContactsTable = async () => {
-  const { error } = await supabase.rpc('create_contacts_table')
-  if (error) throw error
+export const setupContactsTable = async () => {
+  const sql = `
+    -- Drop existing table if it exists
+    drop table if exists public.contacts;
+
+    -- Create contacts table
+    create table public.contacts (
+        id uuid default gen_random_uuid() primary key,
+        user_id uuid references auth.users(id) on delete cascade not null,
+        company_name text not null,
+        fantasy_name text,
+        category text not null,
+        address jsonb not null,
+        phone text,
+        email text,
+        website text,
+        status text not null,
+        created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+        updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+        unique(company_name, user_id)
+    );
+
+    -- Enable RLS
+    alter table public.contacts enable row level security;
+
+    -- Create policies
+    create policy "Users can view their own contacts"
+        on public.contacts for select
+        using (auth.uid() = user_id);
+
+    create policy "Users can insert their own contacts"
+        on public.contacts for insert
+        with check (auth.uid() = user_id);
+
+    create policy "Users can update their own contacts"
+        on public.contacts for update
+        using (auth.uid() = user_id)
+        with check (auth.uid() = user_id);
+
+    create policy "Users can delete their own contacts"
+        on public.contacts for delete
+        using (auth.uid() = user_id);
+
+    -- Create updated_at trigger
+    create or replace function public.handle_updated_at()
+    returns trigger as $$
+    begin
+        new.updated_at = timezone('utc'::text, now());
+        return new;
+    end;
+    $$ language plpgsql security definer;
+
+    -- Create trigger
+    drop trigger if exists handle_contacts_updated_at on public.contacts;
+    create trigger handle_contacts_updated_at
+        before update on public.contacts
+        for each row
+        execute function public.handle_updated_at();
+  `
+
+  try {
+    const { error } = await supabase.rpc('exec_sql', { sql })
+    if (error) throw error
+    console.log('Tabela de contatos criada com sucesso!')
+    return { error: null }
+  } catch (error) {
+    console.error('Erro ao criar tabela de contatos:', error)
+    return { error }
+  }
 }
 
 // Função para criar um novo contato com validação
