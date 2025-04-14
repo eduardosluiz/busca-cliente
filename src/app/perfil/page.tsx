@@ -1,3 +1,5 @@
+'use client'
+
 import { getUserProfile, updateUserProfile } from '@/services/user'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'

@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { getUserProfile, updateUserProfile } from '@/services/api';

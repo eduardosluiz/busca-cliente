@@ -1,29 +1,47 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import LoginModal from '@/components/LoginModal'
 
 export default function Home() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+
   return (
-    <div className="min-h-screen bg-white">
-      <header className="fixed w-full bg-white/80 backdrop-blur-sm z-50 border-b border-gray-200">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                Busca Cliente.ia
-              </span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
+      
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/images/logo.png"
+                  alt="Logo"
+                  width={150}
+                  height={50}
+                  priority
+                />
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="text-gray-600 hover:text-blue-600"
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 rounded-lg shadow-sm transition-all duration-200"
               >
                 Login
-              </Link>
+              </button>
               <Link
                 href="/register"
-                className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
               >
-                Começar Agora
+                Criar conta
               </Link>
             </div>
           </div>

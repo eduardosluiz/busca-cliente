@@ -1,5 +1,7 @@
 import { LogOut, User } from 'lucide-react'
 import { signOut } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 
 interface UserBadgeProps {
@@ -8,8 +10,18 @@ interface UserBadgeProps {
 }
 
 export function UserBadge({ userName, className }: UserBadgeProps) {
+  const router = useRouter()
+
   const handleSignOut = async () => {
-    await signOut()
+    try {
+      await signOut()
+      toast.success('Logout realizado com sucesso!')
+      router.push('/login')
+      router.refresh()
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error)
+      toast.error('Erro ao fazer logout. Tente novamente.')
+    }
   }
 
   return (

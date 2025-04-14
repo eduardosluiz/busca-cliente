@@ -12,6 +12,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export async function middleware(req: NextRequest) {
   try {
+    // Se for a rota raiz, permitir acesso sem verificação
+    if (req.nextUrl.pathname === '/') {
+      return NextResponse.next()
+    }
+
     // Criar response e cliente do Supabase
     const res = NextResponse.next()
     const supabase = createMiddlewareClient({ req, res })
@@ -83,17 +88,18 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-// Configuração do matcher para aplicar o middleware em todas as rotas exceto assets estáticos
+// Configuração do matcher para aplicar o middleware em todas as rotas exceto assets estáticos e a rota raiz
 export const config = {
   matcher: [
     /*
      * Match all request paths except:
+     * - / (root path)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
      * - api routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/|api/).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public/|api/|$).*)',
   ],
 } 

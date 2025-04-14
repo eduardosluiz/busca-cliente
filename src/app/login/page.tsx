@@ -1,128 +1,96 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
 
 export default function Login() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
   const supabase = createClientComponentClient()
 
-  useEffect(() => {
-    const checkAndClearSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-        if (session) {
-          // Se houver uma sessão ativa, fazer logout
-          await supabase.auth.signOut()
-          router.refresh()
-        }
-      } catch (error) {
-        console.error('Erro ao verificar sessão:', error)
-      }
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (error) throw error
+    } catch (err: any) {
+      console.error('Erro no login com Google:', err)
+      toast.error('Erro ao fazer login com Google')
     }
+  }
 
-    checkAndClearSession()
-  }, [])
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     setLoading(true)
-    setError('')
+    setError(null)
 
     try {
-      console.log('Tentando login com:', { email }) // Não logar a senha!
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const formData = new FormData(event.currentTarget)
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) {
-        console.error('Erro de autenticação:', error)
-        if (error.message.includes('Invalid login credentials')) {
-          throw new Error('Email ou senha incorretos')
-        } else if (error.message.includes('Email not confirmed')) {
-          throw new Error('Por favor, confirme seu email antes de fazer login')
-        } else {
-          throw error
-        }
-      }
+      if (signInError) throw signInError
 
-      if (data?.user) {
-        console.log('Login bem sucedido:', data.user.email)
-        router.refresh()
-        router.push('/dashboard')
-      } else {
-        throw new Error('Usuário não encontrado')
-      }
-    } catch (error: any) {
-      console.error('Erro completo:', error)
-      setError(error.message || 'Erro ao fazer login. Verifique suas credenciais.')
+      toast.success('Login realizado com sucesso!')
+      router.push('/dashboard')
+      router.refresh()
+    } catch (err: any) {
+      console.error('Erro no login:', err)
+      setError(err.message === 'Invalid login credentials'
+        ? 'Email ou senha inválidos'
+        : 'Ocorreu um erro ao fazer login. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleGoogleLogin = async () => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      })
-
-      if (error) throw error
-    } catch (error: any) {
-      setError(error.message)
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center">
-      <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50 border-b border-gray-200">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link href="/" className="flex items-center">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-              Busca Cliente.ia
-            </span>
-          </Link>
-        </nav>
-      </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-start pt-16">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+              Bem-vindo de volta
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Não tem uma conta?{' '}
+              <a
+                href="/register"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Criar conta gratuita
+              </a>
+            </p>
+          </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md mt-24 px-4">
-        <h2 className="text-center text-3xl font-bold tracking-tight">
-          <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-            Bem-vindo de volta
-          </span>
-        </h2>
-        <p className="mt-2 text-center text-gray-600">
-          Não tem uma conta?{' '}
-          <Link
-            href="/register"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            Criar conta gratuita
-          </Link>
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
-        <div className="bg-white py-8 px-4 shadow-xl rounded-lg sm:px-10 border border-gray-200">
-          <form className="space-y-6" onSubmit={handleLogin}>
-            {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded">
-                {error}
+          {error && (
+            <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
               </div>
-            )}
-            
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
@@ -134,9 +102,8 @@ export default function Login() {
                   type="email"
                   autoComplete="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Digite seu email"
                 />
               </div>
             </div>
@@ -152,9 +119,8 @@ export default function Login() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Digite sua senha"
                 />
               </div>
             </div>
@@ -171,14 +137,10 @@ export default function Login() {
                   Lembrar-me
                 </label>
               </div>
-
               <div className="text-sm">
-                <Link
-                  href="/forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                >
+                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
                   Esqueceu sua senha?
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -186,7 +148,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-opacity disabled:opacity-50"
+                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 {loading ? 'Entrando...' : 'Entrar'}
               </button>
@@ -196,7 +158,7 @@ export default function Login() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
@@ -208,9 +170,9 @@ export default function Login() {
             <div className="mt-6">
               <button
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
               >
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
+                <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                     fill="#4285F4"
