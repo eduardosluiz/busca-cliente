@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [router, supabase.auth])
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, isLoading, user }}>

@@ -3,29 +3,29 @@ export interface SearchResult {
   name: string
   fantasyName?: string
   category: string
-  location: string
-  phone?: string
-  email?: string
-  website?: string
-  description?: string
   status: string
-  openDate: string
+  size?: string
+  description?: string
+  location: string
   address: {
     street: string
-    number?: string
+    number: string
     complement?: string
     neighborhood: string
     city: string
     state: string
     zipCode: string
-    fullAddress: string
+    fullAddress?: string
   }
-  cnae?: {
+  cnae: {
     code: string
     description: string
   }
-  size?: string
-  legalNature?: string
+  legalNature: string
+  phone?: string
+  email?: string
+  website?: string
+  openDate?: string
 }
 
 export interface SearchFilters {
@@ -38,35 +38,61 @@ export interface SearchFilters {
   city?: string
 }
 
+export interface SearchError {
+  code: string
+  message: string
+  details?: any
+}
+
 export interface SearchResponse {
   results: SearchResult[]
   total: number
   message?: string
+  error?: SearchError
 }
 
 const BRASIL_API_BASE_URL = 'https://brasilapi.com.br/api'
 const RECEITAWS_API_BASE_URL = 'https://www.receitaws.com.br/v1'
 
-async function searchCNPJ(cnpj: string): Promise<SearchResult | null> {
+async function searchCNPJ(cnpj: string): Promise<SearchResult | SearchError> {
   try {
+    console.log(`[SearchService] Iniciando busca por CNPJ: ${cnpj}`)
+    
     // Busca na Brasil API
     const brasilApiResponse = await fetch(`${BRASIL_API_BASE_URL}/cnpj/v1/${cnpj}`)
     
     if (!brasilApiResponse.ok) {
+      console.log(`[SearchService] Brasil API falhou (${brasilApiResponse.status}), tentando ReceitaWS`)
+      
       // Se falhar na Brasil API, tenta na ReceitaWS
       const receitawsResponse = await fetch(`${RECEITAWS_API_BASE_URL}/cnpj/${cnpj}`)
+      
       if (!receitawsResponse.ok) {
-        throw new Error('CNPJ não encontrado em nenhuma API')
+        throw {
+          code: 'CNPJ_NOT_FOUND',
+          message: 'CNPJ não encontrado em nenhuma API',
+          details: {
+            brasilApiStatus: brasilApiResponse.status,
+            receitawsStatus: receitawsResponse.status
+          }
+        }
       }
+      
       const data = await receitawsResponse.json()
+      console.log(`[SearchService] Dados encontrados na ReceitaWS`)
       return formatReceitaWSData(data)
     }
 
     const data = await brasilApiResponse.json()
+    console.log(`[SearchService] Dados encontrados na Brasil API`)
     return formatBrasilApiData(data)
-  } catch (error) {
-    console.error('Erro ao buscar CNPJ:', error)
-    return null
+  } catch (error: any) {
+    console.error('[SearchService] Erro ao buscar CNPJ:', error)
+    return {
+      code: error.code || 'SEARCH_ERROR',
+      message: error.message || 'Erro ao buscar dados do CNPJ',
+      details: error
+    }
   }
 }
 
@@ -131,59 +157,96 @@ function formatReceitaWSData(data: any): SearchResult {
 }
 
 export async function searchBusinesses(filters: SearchFilters): Promise<SearchResponse> {
-  const { query, location, category, status, size, state, city } = filters
+  try {
+    console.log(`[SearchService] Iniciando busca com filtros:`, filters)
+    
+    const { query, location, category, status, size, state, city } = filters
 
-  // Se for um CNPJ, busca diretamente
-  const cnpjNumbers = query.replace(/\D/g, '')
-  if (cnpjNumbers.length === 14) {
-    const result = await searchCNPJ(cnpjNumbers)
-    if (result) {
+    // Se for um CNPJ, busca diretamente
+    const cnpjNumbers = query.replace(/\D/g, '')
+    if (cnpjNumbers.length === 14) {
+      console.log(`[SearchService] Detectado CNPJ: ${cnpjNumbers}`)
+      const result = await searchCNPJ(cnpjNumbers)
+      
+      if ('code' in result) {
+        // Se retornou um erro
+        return { 
+          results: [], 
+          total: 0, 
+          error: result,
+          message: result.message 
+        }
+      }
+
       // Aplica os filtros de localização se fornecidos
       if (location && !result.location.toLowerCase().includes(location.toLowerCase())) {
-        return { results: [], total: 0, message: 'Nenhuma empresa encontrada com os critérios informados.' }
+        return { 
+          results: [], 
+          total: 0, 
+          message: 'Nenhuma empresa encontrada com os critérios informados.',
+          error: {
+            code: 'LOCATION_MISMATCH',
+            message: 'A empresa encontrada não está na localização especificada'
+          }
+        }
       }
+      
       return { results: [result], total: 1 }
     }
-  }
 
-  // Para outros tipos de busca, usa os dados mockados por enquanto
-  // TODO: Integrar com outras APIs de busca de empresas
-  let results = mockDatabase
-    .filter(item => {
-      const matchesQuery = 
-        item.name.toLowerCase().includes(query.toLowerCase()) ||
-        (item.fantasyName && item.fantasyName.toLowerCase().includes(query.toLowerCase())) ||
-        item.category.toLowerCase().includes(query.toLowerCase()) ||
-        (item.description && item.description.toLowerCase().includes(query.toLowerCase()))
+    // Para outros tipos de busca
+    console.log(`[SearchService] Realizando busca textual`)
+    let results = mockDatabase
+      .filter(item => {
+        const matchesQuery = 
+          item.name.toLowerCase().includes(query.toLowerCase()) ||
+          (item.fantasyName && item.fantasyName.toLowerCase().includes(query.toLowerCase())) ||
+          item.category.toLowerCase().includes(query.toLowerCase()) ||
+          (item.description && item.description.toLowerCase().includes(query.toLowerCase()))
 
-      const matchesLocation = !location || 
-        item.location.toLowerCase().includes(location.toLowerCase()) ||
-        item.address.city.toLowerCase().includes(location.toLowerCase()) ||
-        item.address.state.toLowerCase().includes(location.toLowerCase())
+        const matchesLocation = !location || 
+          item.location.toLowerCase().includes(location.toLowerCase()) ||
+          item.address.city.toLowerCase().includes(location.toLowerCase()) ||
+          item.address.state.toLowerCase().includes(location.toLowerCase())
 
-      const matchesCategory = !category || 
-        item.category.toLowerCase().includes(category.toLowerCase())
+        const matchesCategory = !category || 
+          item.category.toLowerCase().includes(category.toLowerCase())
 
-      const matchesStatus = !status || 
-        item.status.toLowerCase() === status.toLowerCase()
+        const matchesStatus = !status || 
+          item.status.toLowerCase() === status.toLowerCase()
 
-      const matchesSize = !size || 
-        (item.size && item.size.toLowerCase() === size.toLowerCase())
+        const matchesSize = !size || 
+          (item.size && item.size.toLowerCase() === size.toLowerCase())
 
-      const matchesState = !state || 
-        item.address.state.toLowerCase() === state.toLowerCase()
+        const matchesState = !state || 
+          item.address.state.toLowerCase() === state.toLowerCase()
 
-      const matchesCity = !city || 
-        item.address.city.toLowerCase() === city.toLowerCase()
+        const matchesCity = !city || 
+          item.address.city.toLowerCase() === city.toLowerCase()
 
-      return matchesQuery && matchesLocation && matchesCategory && 
-             matchesStatus && matchesSize && matchesState && matchesCity
-    })
+        return matchesQuery && matchesLocation && matchesCategory && 
+               matchesStatus && matchesSize && matchesState && matchesCity
+      })
 
-  return {
-    results,
-    total: results.length,
-    message: results.length === 0 ? 'Nenhuma empresa encontrada com os critérios informados.' : undefined
+    console.log(`[SearchService] Encontrados ${results.length} resultados`)
+    
+    return {
+      results,
+      total: results.length,
+      message: results.length === 0 ? 'Nenhuma empresa encontrada com os critérios informados.' : undefined
+    }
+  } catch (error) {
+    console.error('[SearchService] Erro na busca:', error)
+    return {
+      results: [],
+      total: 0,
+      error: {
+        code: 'SEARCH_ERROR',
+        message: 'Erro ao realizar a busca',
+        details: error
+      },
+      message: 'Ocorreu um erro ao processar sua busca. Por favor, tente novamente.'
+    }
   }
 }
 
@@ -210,7 +273,11 @@ const mockDatabase: SearchResult[] = [
       fullAddress: 'Rua das Pizzas, 123, Centro, Porto Alegre - RS, 90000-000'
     },
     size: 'Pequena Empresa',
-    legalNature: 'Empresário Individual'
+    legalNature: 'Empresário Individual',
+    cnae: {
+      code: '12345678',
+      description: 'Atividades de serviços de alimentação'
+    }
   },
   // ... outros dados mockados existentes ...
 ] 

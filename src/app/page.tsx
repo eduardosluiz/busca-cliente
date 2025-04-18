@@ -141,7 +141,7 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-gray-600">
-                  "Incrível como a ferramenta facilitou nossa prospecção. Conseguimos encontrar leads qualificados de forma muito mais eficiente. O ROI foi excepcional!"
+                  &ldquo;Incrível como a ferramenta facilitou nossa prospecção. Conseguimos encontrar leads qualificados de forma muito mais eficiente. O ROI foi excepcional!&rdquo;
                 </p>
               </div>
 
@@ -156,7 +156,7 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-gray-600">
-                  "Os filtros avançados são fantásticos! Conseguimos segmentar perfeitamente nosso público-alvo e aumentamos nossa taxa de conversão em 150%."
+                  &ldquo;Os filtros avançados são fantásticos! Conseguimos segmentar perfeitamente nosso público-alvo e aumentamos nossa taxa de conversão em 150%!&rdquo;
                 </p>
               </div>
 
@@ -171,7 +171,7 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-gray-600">
-                  "A melhor ferramenta de prospecção que já usei. A qualidade dos contatos é impressionante e o suporte é excelente. Recomendo fortemente!"
+                  &ldquo;A melhor ferramenta de prospecção que já usei. A qualidade dos contatos é impressionante e o suporte é excelente. Recomendo fortemente!&rdquo;
                 </p>
               </div>
             </div>

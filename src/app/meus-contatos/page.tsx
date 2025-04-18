@@ -30,7 +30,7 @@ export default function MeusContatosPage() {
 
   useEffect(() => {
     loadContacts()
-  }, [pagination.page, filters])
+  }, [pagination.page, filters, loadContacts])
 
   async function loadContacts() {
     try {

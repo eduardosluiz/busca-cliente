@@ -6,6 +6,7 @@ import { saveContacts } from '@/services/contactService'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { PageTitle } from '@/components/ui/page-title'
+import { Pagination } from '@/components/ui/pagination'
 import Image from 'next/image'
 
 export default function BuscarClientes() {
@@ -19,6 +20,8 @@ export default function BuscarClientes() {
   const [error, setError] = useState('')
   const [totalResults, setTotalResults] = useState(0)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const setupDatabase = async () => {
     setIsConfiguring(true)
@@ -62,11 +65,13 @@ export default function BuscarClientes() {
         throw new Error(data.error || 'Erro ao realizar a busca')
       }
 
-      setResults(data.results || [])
-      setTotalResults(data.total || 0)
       if (data.message) {
         setError(data.message)
       }
+
+      setResults(data.results || [])
+      setTotalResults(data.total || 0)
+      setCurrentPage(1) // Reset para primeira página ao fazer nova busca
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao realizar a busca')
       setResults([])
@@ -148,6 +153,16 @@ export default function BuscarClientes() {
       setIsSaving(false)
     }
   }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  // Calcular índices para paginação
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = results.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(results.length / itemsPerPage)
 
   return (
     <div className="flex h-screen bg-white">
@@ -286,15 +301,15 @@ export default function BuscarClientes() {
               </form>
 
               {error && (
-                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <p className="text-sm text-red-700">{error}</p>
+                      <p className="text-sm text-blue-700">{error}</p>
                     </div>
                   </div>
                 </div>
@@ -374,7 +389,7 @@ export default function BuscarClientes() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {results.map((result) => (
+                      {currentItems.map((result) => (
                         <tr key={result.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
@@ -481,6 +496,15 @@ export default function BuscarClientes() {
                   </table>
                 </div>
               </div>
+            )}
+
+            {/* Paginação */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             )}
           </div>
         </main>

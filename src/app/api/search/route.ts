@@ -66,97 +66,226 @@ async function searchCNPJ(cnpj: string): Promise<SearchResult> {
 const mockDatabase: SearchResult[] = [
   {
     id: '1',
-    name: 'Pizzaria do João',
-    category: 'Restaurante - Pizzaria',
+    name: 'Empresa A',
+    category: 'Serviços',
     location: 'Porto Alegre, RS',
     phone: '(51) 99999-9999',
-    email: 'contato@pizzariadojoao.com.br',
-    website: 'www.pizzariadojoao.com.br',
-    description: 'A melhor pizzaria da região',
+    email: 'contato@empresaa.com.br',
+    website: 'www.empresaa.com.br',
     status: 'Ativa',
     openDate: '2020-01-01',
     address: {
-      street: 'Rua das Pizzas',
-      number: '123',
-      neighborhood: 'Centro',
+      street: 'Av. Assis Brasil',
+      number: '1234',
+      neighborhood: 'Sarandi',
       city: 'Porto Alegre',
       state: 'RS',
-      zipCode: '90000-000',
-      fullAddress: 'Rua das Pizzas, 123, Centro, Porto Alegre - RS, 90000-000'
+      zipCode: '91110-000'
     }
   },
   {
     id: '2',
-    name: 'Pizzaria Bella Napoli',
-    category: 'Restaurante - Pizzaria',
-    location: 'Porto Alegre, RS',
-    phone: '(51) 98888-8888',
-    email: 'contato@bellanapoli.com.br',
-    website: 'www.bellanapoli.com.br',
-    description: 'Pizzas artesanais no estilo napolitano',
+    name: 'Empresa B',
+    category: 'Comércio',
+    location: 'São Paulo, SP',
+    phone: '(11) 98888-8888',
+    email: 'contato@empresab.com.br',
+    website: 'www.empresab.com.br',
     status: 'Ativa',
     openDate: '2019-05-15',
     address: {
-      street: 'Avenida Independência',
-      number: '456',
-      neighborhood: 'Independência',
-      city: 'Porto Alegre',
-      state: 'RS',
-      zipCode: '90035-072',
-      fullAddress: 'Avenida Independência, 456, Independência, Porto Alegre - RS, 90035-072'
+      street: 'Av. Paulista',
+      number: '567',
+      neighborhood: 'Bela Vista',
+      city: 'São Paulo',
+      state: 'SP',
+      zipCode: '01310-000'
     }
   },
   {
     id: '3',
-    name: 'Pizzaria Margherita',
-    category: 'Restaurante - Pizzaria',
-    location: 'Porto Alegre, RS',
-    phone: '(51) 97777-7777',
-    email: 'contato@margherita.com.br',
-    website: 'www.margherita.com.br',
-    description: 'Pizzas tradicionais italianas desde 1998',
+    name: 'Empresa C',
+    category: 'Indústria',
+    location: 'Curitiba, PR',
+    phone: '(41) 97777-7777',
+    email: 'contato@empresac.com.br',
+    website: 'www.empresac.com.br',
     status: 'Ativa',
-    openDate: '1998-10-20',
+    openDate: '2018-10-20',
     address: {
-      street: 'Rua Padre Chagas',
-      number: '789',
-      neighborhood: 'Moinhos de Vento',
-      city: 'Porto Alegre',
-      state: 'RS',
-      zipCode: '90570-080',
-      fullAddress: 'Rua Padre Chagas, 789, Moinhos de Vento, Porto Alegre - RS, 90570-080'
+      street: 'Rua XV de Novembro',
+      number: '890',
+      neighborhood: 'Centro',
+      city: 'Curitiba',
+      state: 'PR',
+      zipCode: '80020-310'
     }
   }
 ];
 
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook-test/search'
+
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  
-  const filters = {
-    query: searchParams.get('query')?.toLowerCase().trim() || '',
-    location: searchParams.get('location')?.toLowerCase().trim(),
-    category: searchParams.get('category')?.toLowerCase().trim(),
-    status: searchParams.get('status')?.toLowerCase().trim(),
-    size: searchParams.get('size')?.toLowerCase().trim(),
-    state: searchParams.get('state')?.toLowerCase().trim(),
-    city: searchParams.get('city')?.toLowerCase().trim()
-  };
-
-  if (!filters.query) {
-    return NextResponse.json(
-      { error: 'Parâmetro de busca é obrigatório' },
-      { status: 400 }
-    );
-  }
-
   try {
-    const searchResponse = await searchBusinesses(filters);
-    return NextResponse.json(searchResponse);
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('query')
+    const location = searchParams.get('location')
+
+    if (!query) {
+      return NextResponse.json({
+        message: 'O parâmetro de busca é obrigatório',
+        results: [],
+        total: 0
+      })
+    }
+
+    try {
+      console.log('Enviando requisição para N8N:', {
+        url: N8N_WEBHOOK_URL,
+        query,
+        location
+      })
+
+      // Tenta enviar a requisição para o N8N
+      const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          location,
+          timestamp: new Date().toISOString()
+        })
+      })
+
+      console.log('Resposta do N8N:', {
+        status: n8nResponse.status,
+        ok: n8nResponse.ok
+      })
+
+      if (n8nResponse.ok) {
+        const data = await n8nResponse.json()
+        console.log('Dados recebidos do N8N:', data)
+        
+        // Se os dados já estiverem no formato correto, use-os diretamente
+        if (data.results && Array.isArray(data.results)) {
+          return NextResponse.json(data)
+        }
+
+        // Se os dados estiverem no formato antigo (array direto), converta-os
+        if (Array.isArray(data)) {
+          const results: SearchResult[] = data.map((item: any, index) => ({
+            id: String(index + 1),
+            name: item.name || '',
+            fantasyName: item.fantasy_name || '',
+            category: item.category || '',
+            status: item.status || 'Ativa',
+            phone: item.phone || item.whatsapp || '',
+            email: item.email || '',
+            website: item.website || '',
+            location: item.location || '',
+            address: {
+              street: item.street || '',
+              number: item.number || '',
+              complement: item.complement || '',
+              neighborhood: item.neighborhood || '',
+              city: item.city || '',
+              state: item.state || '',
+              zipCode: item.zip_code || ''
+            },
+            openDate: item.open_date || ''
+          }))
+
+          return NextResponse.json({
+            results,
+            total: results.length
+          })
+        }
+      } else {
+        console.error('Erro na resposta do N8N:', await n8nResponse.text())
+      }
+    } catch (n8nError) {
+      console.error('Erro ao conectar com N8N:', n8nError)
+    }
+
+    console.log('Usando dados mockados como fallback')
+    // Fallback para dados mockados quando N8N falha
+    const filteredResults = mockDatabase.filter(item => 
+      item.name.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase()) ||
+      (location && item.location.toLowerCase().includes(location.toLowerCase()))
+    )
+
+    return NextResponse.json({
+      results: filteredResults,
+      total: filteredResults.length,
+      source: 'mock'
+    })
+
   } catch (error) {
-    console.error('Erro na busca:', error);
+    console.error('Erro ao processar busca:', error)
     return NextResponse.json(
-      { error: 'Erro ao processar a busca' },
+      { 
+        error: 'Erro ao processar a busca. Por favor, tente novamente.',
+        message: error instanceof Error ? error.message : 'Erro desconhecido',
+        results: [],
+        total: 0
+      },
       { status: 500 }
-    );
+    )
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.json()
+    
+    // Validar se os dados recebidos do N8N estão no formato esperado
+    if (!Array.isArray(data)) {
+      return NextResponse.json(
+        { error: 'Formato de dados inválido' },
+        { status: 400 }
+      )
+    }
+
+    // Mapear os dados recebidos do N8N para o formato da aplicação
+    const results: SearchResult[] = data.map((item: any, index) => ({
+      id: item.id || String(index + 1),
+      name: item.name || '',
+      fantasyName: item.fantasy_name || '',
+      category: item.category || 'Engenharia',
+      status: item.status || 'Ativa',
+      phone: item.whatsapp !== 'unknown' ? item.whatsapp : '',
+      email: item.email !== 'unknown' ? item.email : '',
+      website: item.website || '',
+      location: item.location || 'Brasil',
+      address: {
+        street: item.street || '',
+        number: item.number || '',
+        complement: item.complement || '',
+        neighborhood: item.neighborhood || '',
+        city: item.city || '',
+        state: item.state || '',
+        zipCode: item.zip_code || ''
+      },
+      openDate: item.open_date || ''
+    }))
+
+    return NextResponse.json({
+      results,
+      total: results.length
+    })
+
+  } catch (error) {
+    console.error('Erro ao processar dados do N8N:', error)
+    return NextResponse.json(
+      { 
+        error: 'Erro interno ao processar dados',
+        results: [],
+        total: 0
+      },
+      { status: 500 }
+    )
   }
 } 
