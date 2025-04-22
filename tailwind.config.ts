@@ -8,13 +8,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-poppins)', 'sans-serif'],
+      },
       colors: {
         primary: {
-          DEFAULT: '#3B82F6', // blue-600
+          DEFAULT: '#2563eb', // blue-700
           foreground: '#FFFFFF',
         },
         secondary: {
-          DEFAULT: '#06B6D4', // cyan-500
+          DEFAULT: '#0ea5e9', // sky-500
           foreground: '#FFFFFF',
         },
         background: {
@@ -27,6 +30,15 @@ const config: Config = {
         },
         border: {
           DEFAULT: '#E5E7EB', // gray-200
+        },
+      },
+      animation: {
+        'gradient': 'gradient 3s ease infinite',
+      },
+      keyframes: {
+        gradient: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
     },

@@ -16,121 +16,94 @@ O Busca Cliente.ia é uma aplicação Next.js 14 que permite aos usuários encon
 ```
 src/
 ├── app/                    # Rotas e páginas da aplicação
-│   ├── (auth)/            # Rotas protegidas que requerem autenticação
-│   ├── api/               # Rotas da API
-│   ├── layout.tsx         # Layout principal da aplicação
-│   └── page.tsx           # Página inicial (Landing page)
-├── components/            # Componentes reutilizáveis
-│   ├── ui/               # Componentes de UI básicos (buttons, inputs, etc)
-│   └── [outros]          # Componentes específicos da aplicação
-├── lib/                   # Utilitários e configurações
-│   ├── database.types.ts  # Tipos do Supabase
-│   ├── supabase.ts       # Cliente Supabase
-│   └── utils.ts          # Funções utilitárias
-└── services/             # Serviços e integrações
+│   ├── assinatura/        # Página de planos e assinatura
+│   ├── auth/              # Rotas de autenticação
+│   ├── buscar-clientes/   # Funcionalidade de busca de clientes
+│   ├── configuracoes/     # Configurações do usuário
+│   ├── dashboard/         # Painel principal
+│   ├── login/            # Página de login
+│   ├── meus-contatos/    # Gerenciamento de contatos
+│   ├── perfil/           # Perfil do usuário
+│   ├── register/         # Página de registro
+│   ├── api/              # Rotas da API
+│   ├── layout.tsx        # Layout principal
+│   └── page.tsx          # Landing page
+├── components/           # Componentes reutilizáveis
+│   ├── ui/              # Componentes de UI básicos
+│   ├── ContactFilters.tsx   # Filtros de contatos
+│   ├── ContactForm.tsx      # Formulário de contatos
+│   ├── ContactList.tsx      # Lista de contatos
+│   ├── ContactsTable.tsx    # Tabela de contatos
+│   ├── DashboardLayout.tsx  # Layout do dashboard
+│   ├── EmailConfirmation.tsx # Confirmação de email
+│   ├── LoginForm.tsx        # Formulário de login
+│   ├── Profile.tsx          # Componente de perfil
+│   ├── Sidebar.tsx          # Barra lateral
+│   └── UserInfo.tsx         # Informações do usuário
+├── lib/                  # Utilitários e configurações
+└── services/            # Serviços e integrações
 ```
-
-## Principais Componentes
-
-### Layout Principal (`app/layout.tsx`)
-- Componente Server-side que define a estrutura base da aplicação
-- Gerencia metadados e fonte Inter do Google
-- Envolve a aplicação com o AuthProvider
-
-### Página Inicial (`app/page.tsx`)
-- Landing page com apresentação do produto
-- Componente Client-side com interatividade
-- Usa componentes do Shadcn/ui para botões e interface
-
-### Autenticação (`app/providers.tsx`)
-- Provedor de autenticação usando Supabase
-- Gerencia estado de autenticação globalmente
-- Fornece hook useAuth para componentes filhos
 
 ## Funcionalidades Principais
 
 ### Sistema de Autenticação
-- Implementado com Supabase Auth
-- Suporte para email/senha e OAuth
-- Middleware para proteção de rotas
+- Login com email/senha
+- Registro de novos usuários
+- Confirmação de email
+- Recuperação de senha
+- Middleware de proteção de rotas
+
+### Dashboard
+- Visão geral das atividades
+- Métricas e estatísticas
+- Acesso rápido às principais funcionalidades
 
 ### Gerenciamento de Contatos
 - CRUD completo de contatos
-- Filtros e busca avançada
-- Paginação e ordenação
+- Filtros avançados de busca
+- Tabela de visualização com ordenação
+- Formulário de cadastro/edição
+- Lista personalizada de contatos
 
-### Busca de Clientes
-- Interface de busca com filtros
-- Integração com APIs externas
-- Sistema de salvamento de contatos
+### Perfil e Configurações
+- Edição de informações pessoais
+- Configurações da conta
+- Preferências do sistema
+- Gerenciamento de assinatura
+
+### Sistema de Assinatura
+- Planos disponíveis
+- Processo de assinatura
+- Gerenciamento de pagamentos
+
+### Componentes de UI
+- Modais de login e registro
+- Barra de navegação responsiva
+- Sidebar com navegação principal
+- Componentes de feedback (loading, error)
+- Tabelas e formulários padronizados
 
 ## Padrões e Convenções
 
 ### Componentes
-- Uso de 'use client' para componentes interativos
-- Componentes UI base em /components/ui
-- Props tipadas com TypeScript
+- Componentes funcionais com TypeScript
+- Uso de hooks personalizados
+- Separação clara entre componentes de UI e lógica
 
 ### Estilização
 - Tailwind CSS para estilos
-- Variáveis CSS personalizadas
-- Sistema de design consistente
+- Componentes shadcn/ui personalizados
+- Design system consistente
 
 ### Estado e Dados
-- Server Components quando possível
+- Server Components para performance
 - Client Components para interatividade
-- Supabase para persistência
-
-## Middleware e Segurança
-
-### Proteção de Rotas
-- Middleware Next.js para autenticação
-- Redirecionamentos automáticos
-- Validação de sessão
-
-### Manipulação de Erros
-- Componentes de erro personalizados
-- Tratamento global de erros
-- Feedback visual para usuários
-
-## Integração com Supabase
-
-### Autenticação
-- Gerenciamento de sessão
-- Refresh tokens automático
-- Proteção contra CSRF
-
-### Banco de Dados
-- Tipos gerados automaticamente
-- Políticas RLS para segurança
-- Queries otimizadas
-
-## Considerações de Performance
-
-### Otimizações
-- Server Components para redução de JS
-- Imagens otimizadas com next/image
-- Carregamento sob demanda
-
-### Cache
-- Estratégias de cache implementadas
-- Revalidação de dados
-- Otimização de builds
-
-## Desenvolvimento
-
-### Ambiente Local
-- Variáveis de ambiente necessárias
-- Configuração do Supabase local
-- Scripts de desenvolvimento
-
-### Deployment
-- Configurado para deploy na Vercel
-- CI/CD automatizado
-- Variáveis de ambiente seguras
+- Integração robusta com Supabase
 
 ## Próximos Passos
 - Implementação de testes automatizados
 - Melhorias na UX/UI
-- Novas integrações
-- Sistema de planos e pagamentos 
+- Expansão das integrações
+- Otimização de performance
+- Sistema de notificações
+- Relatórios e análises avançadas 

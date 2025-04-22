@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 17, 24, 39;
+    --background-end-rgb: 17, 24, 39;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: 'Poppins', sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent;
+  }
+  
+  .bg-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-cyan-500;
+  }
+
+  /* Estilização da barra de rolagem */
+  .overflow-x-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #E2E8F0 #F8FAFC;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: #F8FAFC;
+    border-radius: 4px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #E2E8F0;
+    border-radius: 4px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #CBD5E1;
+  }
+
+  /* Estilos padrão para tabelas do sistema */
+  .table-container {
+    @apply w-full overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm max-w-[95%] mx-auto;
+  }
+
+  .table-header {
+    @apply bg-gray-50 border-b border-gray-200 text-xs;
+  }
+
+  .table-cell {
+    @apply px-3 py-2.5 border-b border-gray-200 relative;
+  }
+
+  .table-cell-content {
+    @apply text-xs text-gray-500 truncate;
+  }
+
+  .table-cell-company {
+    @apply text-xs font-medium text-gray-900 truncate;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-gray-50 transition-colors duration-150 ease-in-out;
+  }
+
+  .table-link {
+    @apply text-blue-600 hover:text-blue-800 transition-colors text-xs;
+  }
+
+  .table-button {
+    @apply transition-colors p-1;
+  }
+
+  .table-button-edit {
+    @apply text-blue-600 hover:text-blue-800 hover:bg-blue-50;
+  }
+
+  .table-button-delete {
+    @apply text-red-600 hover:text-red-800 hover:bg-red-50;
+  }
+
+  /* Estilos para redimensionamento de colunas */
+  .resize-handle {
+    @apply absolute top-0 right-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-400 opacity-0 hover:opacity-100 transition-opacity;
+  }
+
+  .table-resizing {
+    @apply select-none cursor-col-resize;
+  }
+
+  .table-header th {
+    @apply resize-x overflow-hidden;
+  }
+
+  /* Garantir que a tabela mantenha largura mínima */
+  .min-w-table {
+    min-width: 1100px;
+  }
+
+  /* Estilos para o resizer das colunas */
+  .resizer {
+    @apply absolute right-0 top-0 h-full w-1 bg-gray-300 cursor-col-resize opacity-0 hover:opacity-100;
+    touch-action: none;
+  }
+
+  .resizer.isResizing {
+    @apply opacity-100 bg-blue-500;
+  }
+
+  .resizing {
+    @apply cursor-col-resize select-none;
+    * {
+      @apply cursor-col-resize select-none;
+    }
+  }
+
+  /* Estilos da tabela */
+  .table-header th {
+    @apply relative;
+  }
+
+  .table-cell {
+    @apply relative px-3 py-2.5 border-b border-gray-200;
+  }
+
+  .table-cell-content {
+    @apply text-xs text-gray-500 truncate;
+  }
+
+  .table-cell-company {
+    @apply text-xs font-medium text-gray-900 truncate;
+  }
+} 
